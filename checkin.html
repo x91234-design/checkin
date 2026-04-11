@@ -50,7 +50,7 @@
 <body>
 
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyrAiA4dmTqafef2kEaeF094UV6FCPJ9OWqbi4Lq_o0fq7XNDeKpxvQ_gisLsKMbpNP/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbws1uV8pTgqlOS_874uhc0vp6cptRhP4jOCStJj32T53fgCV83XVvx10SjQwXzBo76HTg/exec';
 
   const ALLOWED_LOCATIONS = [
     {
@@ -215,9 +215,9 @@
     } else {
       el.innerHTML = todayLogs.map(l => `
         <div class="log-item">
-          <div class="log-dot ${l.type==='上班' ? 'dot-in' : 'dot-out'}"></div>
+          <div class="log-dot ${l.type === '上班' ? 'dot-in' : 'dot-out'}"></div>
           <div>
-            <div class="log-type">${l.type==='上班' ? '上班打卡' : '下班打卡'}</div>
+            <div class="log-type">${l.type === '上班' ? '上班打卡' : '下班打卡'}</div>
             <div class="log-time">${l.time}</div>
             <div class="log-loc">${l.location || ''}</div>
           </div>
@@ -278,7 +278,6 @@
         mode: 'no-cors'
       });
 
-      // 本地立即顯示
       todayLogs.push({ type: type === 'in' ? '上班' : '下班', time: timeStr, location: locName });
       renderLogs();
       showToast(type === 'in' ? `上班打卡成功 ${timeStr}` : `下班打卡成功 ${timeStr}`);
