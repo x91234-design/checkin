@@ -8,7 +8,7 @@
 <style>
   :root {
     --blue: #2563EB; --blue-dark: #1D4ED8;
-    --green: #16A34A; --red: #DC2626; --amber: #D97706;
+    --green: #16A34A; --red: #DC2626;
     --bg: #F8FAFC; --card: #FFFFFF; --text: #0F172A;
     --muted: #64748B; --border: #E2E8F0; --radius: 16px;
   }
@@ -50,19 +50,7 @@
 <body>
 
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxST-gwnqeXCKyVG5QNQ2cjH9n4YSB17lN3an3h3xw2DtUkhOBvUBm0SNqEoXzQXzps/exec';
-
-  const ALLOWED_LOCATIONS = [
-    {
-      name: '家樂社區關懷協會',
-      lat: 25.0266,
-      lng: 121.4259,
-      radius: 300
-    }
-  ];
-
-  const EMPLOYEES = ['瑜均', '恩翔', '開開'];
-
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAsifDEi_4nQ6v_LiD7OctD_zuO3kU0py7HFaVDIwA7jjD8ZRy6JCuQR-J7qNzXgK9/exec';
   const LATE_HOUR = 9;
   const LATE_MINUTE = 0;
 </script>
@@ -77,7 +65,7 @@
   <div class="card">
     <div class="card-label">員工姓名</div>
     <select class="emp-select" id="empSelect">
-      <option value="">— 請選擇姓名 —</option>
+      <option value="">載入中…</option>
     </select>
   </div>
 
@@ -122,12 +110,9 @@
   let todayLogs = [];
   let submitting = false;
 
-  const sel = document.getElementById('empSelect');
-  EMPLOYEES.forEach(n => {
-    const o = document.createElement('option');
-    o.value = n; o.textContent = n;
-    sel.appendChild(o);
-  });
+  const ALLOWED_LOCATIONS = [
+    { name: '家樂社區關懷協會', lat: 25.0266, lng: 121.4259, radius: 300 }
+  ];
 
   function pad(n) { return String(n).padStart(2, '0'); }
 
@@ -226,6 +211,22 @@
     updateBtnState();
   }
 
+  async function loadEmployees() {
+    try {
+      const res = await fetch(SCRIPT_URL + '?action=employees');
+      const names = await res.json();
+      const sel = document.getElementById('empSelect');
+      sel.innerHTML = '<option value="">— 請選擇姓名 —</option>';
+      names.forEach(n => {
+        const o = document.createElement('option');
+        o.value = n; o.textContent = n;
+        sel.appendChild(o);
+      });
+    } catch(e) {
+      document.getElementById('empSelect').innerHTML = '<option value="">載入失敗，請重新整理</option>';
+    }
+  }
+
   async function loadTodayLogs() {
     const name = document.getElementById('empSelect').value;
     if (!name) {
@@ -277,7 +278,6 @@
         method: 'GET',
         mode: 'no-cors'
       });
-
       todayLogs.push({ type: type === 'in' ? '上班' : '下班', time: timeStr, location: locName });
       renderLogs();
       showToast(type === 'in' ? `上班打卡成功 ${timeStr}` : `下班打卡成功 ${timeStr}`);
@@ -289,6 +289,7 @@
     updateBtnState();
   }
 
+  loadEmployees();
   initLoc();
   loadTodayLogs();
 </script>
